@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/apcera/gssapi"
+	"github.com/cea-hpc/gssapi"
 )
 
 const negotiateScheme = "Negotiate"

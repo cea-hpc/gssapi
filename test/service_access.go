@@ -5,8 +5,8 @@ package test
 import (
 	"net/http"
 
-	"github.com/apcera/gssapi"
-	"github.com/apcera/gssapi/spnego"
+	"github.com/cea-hpc/gssapi"
+	"github.com/cea-hpc/gssapi/spnego"
 )
 
 func HandleAccess(c *Context, w http.ResponseWriter, r *http.Request) (code int, message string) {

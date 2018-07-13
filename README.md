@@ -73,11 +73,11 @@ We definitely cannot authenticate with:
 
 [License-Url]: https://opensource.org/licenses/Apache-2.0
 [License-Image]: https://img.shields.io/hexpm/l/plug.svg
-[Build-Status-Url]: http://travis-ci.org/apcera/gssapi
-[Build-Status-Image]: https://travis-ci.org/apcera/gssapi.svg?branch=master
-[Coverage-Url]: https://coveralls.io/r/apcera/gssapi?branch=master
-[Coverage-image]: https://img.shields.io/coveralls/apcera/gssapi.svg?branch=master
-[ReportCard-Url]: http://goreportcard.com/report/github.com/apcera/gssapi
-[ReportCard-Image]: http://goreportcard.com/badge/github.com/apcera/gssapi
-[Godoc-Url]: https://godoc.org/github.com/apcera/gssapi
-[Godoc-Image]: https://godoc.org/github.com/apcera/gssapi?status.svg
+[Build-Status-Url]: http://travis-ci.org/cea-hpc/gssapi
+[Build-Status-Image]: https://travis-ci.org/cea-hpc/gssapi.svg?branch=master
+[Coverage-Url]: https://coveralls.io/r/cea-hpc/gssapi?branch=master
+[Coverage-image]: https://img.shields.io/coveralls/cea-hpc/gssapi.svg?branch=master
+[ReportCard-Url]: http://goreportcard.com/report/github.com/cea-hpc/gssapi
+[ReportCard-Image]: http://goreportcard.com/badge/github.com/cea-hpc/gssapi
+[Godoc-Url]: https://godoc.org/github.com/cea-hpc/gssapi
+[Godoc-Image]: https://godoc.org/github.com/cea-hpc/gssapi?status.svg

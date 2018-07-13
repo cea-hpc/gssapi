@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/apcera/gssapi"
+	"github.com/cea-hpc/gssapi"
 )
 
 type loggingHandler struct {
