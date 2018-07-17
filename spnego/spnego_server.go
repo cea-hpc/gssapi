@@ -18,7 +18,7 @@ type ServerNegotiator interface {
 	AcquireCred(string) (*gssapi.CredId, error)
 
 	// Negotiate handles the negotiation with the client.
-	Negotiate(*gssapi.CredId, http.Header, http.Header) (string, int, error)
+	Negotiate(*gssapi.CredId, http.Header, http.Header) (string, int, *gssapi.CredId, error)
 }
 
 // A KerberizedServer allows a server to negotiate authentication over SPNEGO
@@ -58,8 +58,9 @@ func (k KerberizedServer) AcquireCred(serviceName string) (*gssapi.CredId, error
 // Negotiate handles the SPNEGO client-server negotiation. Negotiate will likely
 // be invoked multiple times; a 200 or 400 response code are terminating
 // conditions, whereas a 401 or 407 means that the client should respond to the
-// challenge that we send.
-func (k KerberizedServer) Negotiate(cred *gssapi.CredId, inHeader, outHeader http.Header) (string, int, error) {
+// challenge that we send. Returns the delegated credentials as third argument
+// which must be release when not used anymore.
+func (k KerberizedServer) Negotiate(cred *gssapi.CredId, inHeader, outHeader http.Header) (string, int, *gssapi.CredId, error) {
 	var challengeHeader, authHeader string
 	var challengeStatus int
 	if k.UseProxyAuthentication {
@@ -80,7 +81,7 @@ func (k KerberizedServer) Negotiate(cred *gssapi.CredId, inHeader, outHeader htt
 	// 401, which the client handles.
 	if !negotiate || inputToken.Length() == 0 {
 		AddSPNEGONegotiate(outHeader, challengeHeader, inputToken)
-		return "", challengeStatus, errors.New("SPNEGO: unauthorized")
+		return "", challengeStatus, nil, errors.New("SPNEGO: unauthorized")
 	}
 
 	// FIXME: GSS_S_CONTINUED_NEEDED handling?
@@ -88,12 +89,11 @@ func (k KerberizedServer) Negotiate(cred *gssapi.CredId, inHeader, outHeader htt
 		k.AcceptSecContext(k.GSS_C_NO_CONTEXT,
 			cred, inputToken, k.GSS_C_NO_CHANNEL_BINDINGS)
 	if err != nil {
-		return "", http.StatusBadRequest, err
+		return "", http.StatusBadRequest, nil, err
 	}
-	delegatedCredHandle.Release()
 	ctx.DeleteSecContext()
 	outputToken.Release()
 	defer srcName.Release()
 
-	return srcName.String(), http.StatusOK, nil
+	return srcName.String(), http.StatusOK, delegatedCredHandle, nil
 }
