@@ -137,6 +137,7 @@ type ftable struct {
 	Fp_gss_inquire_cred         unsafe.Pointer
 	Fp_gss_inquire_cred_by_mech unsafe.Pointer
 	Fp_gss_release_cred         unsafe.Pointer
+	Fp_gss_store_cred_into      unsafe.Pointer
 
 	// message.go
 	Fp_gss_get_mic    unsafe.Pointer

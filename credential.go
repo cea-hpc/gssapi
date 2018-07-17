@@ -3,7 +3,10 @@
 package gssapi
 
 /*
+#include <stdlib.h>
+
 #include <gssapi/gssapi.h>
+#include <gssapi/gssapi_ext.h>
 
 OM_uint32
 wrap_gss_acquire_cred(void *fp,
@@ -142,11 +145,48 @@ wrap_gss_release_cred(void *fp,
 		cred_handle);
 }
 
+OM_uint32
+wrap_gss_store_cred_into(void *fp,
+	OM_uint32              *minor_status,
+	const gss_cred_id_t     cred_handle,
+	const char             *krb5ccname)
+{
+	gss_key_value_element_desc element;
+	gss_key_value_set_desc store;
+
+	element.key = "ccache";
+	element.value = krb5ccname;
+	store.elements = &element;
+	store.count = 1;
+
+	return ((OM_uint32(*) (
+		OM_uint32 *,
+	        gss_cred_id_t,
+		gss_cred_usage_t,
+	        gss_OID,
+		OM_uint32,
+		OM_uint32,
+		gss_const_key_value_set_t,
+		gss_OID_set *,
+		gss_cred_usage_t *)
+	) fp)(
+		minor_status,
+		cred_handle,
+		GSS_C_INITIATE,
+		GSS_C_NULL_OID,
+		1,
+		1,
+		&store,
+		NULL,
+		NULL);
+}
 */
 import "C"
 
 import (
+	"fmt"
 	"time"
+	"unsafe"
 )
 
 // NewCredId instantiates a new credential.
@@ -302,6 +342,24 @@ func (c *CredId) Release() error {
 	maj := C.wrap_gss_release_cred(c.Fp_gss_release_cred,
 		&min,
 		&c.C_gss_cred_id_t)
+
+	return c.stashLastStatus(maj, min)
+}
+
+// Store credential in a file.
+func (c *CredId) Store(filename string) error {
+	if c == nil || c.C_gss_cred_id_t == nil {
+		return nil
+	}
+
+	krb5ccname := fmt.Sprintf("FILE:%s", filename)
+	cKrb5ccname := C.CString(krb5ccname)
+	defer C.free(unsafe.Pointer(cKrb5ccname))
+
+	min := C.OM_uint32(0)
+	maj := C.wrap_gss_store_cred_into(c.Fp_gss_store_cred_into, &min,
+		c.C_gss_cred_id_t,
+		cKrb5ccname)
 
 	return c.stashLastStatus(maj, min)
 }
