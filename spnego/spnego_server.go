@@ -97,3 +97,32 @@ func (k KerberizedServer) Negotiate(cred *gssapi.CredId, inHeader, outHeader htt
 
 	return srcName.String(), http.StatusOK, delegatedCredHandle, nil
 }
+
+func (k KerberizedServer) AuthenticateUserWithPassword(user, pass string) (*gssapi.CredId, error) {
+	userBuf, err := k.MakeBufferString(user)
+	if err != nil {
+		return nil, err
+	}
+	defer userBuf.Release()
+
+	userName, err := userBuf.Name(k.GSS_KRB5_NT_PRINCIPAL_NAME)
+	if err != nil {
+		return nil, err
+	}
+	defer userName.Release()
+
+	passBuf, err := k.MakeBufferString(pass)
+	if err != nil {
+		return nil, err
+	}
+	defer passBuf.Release()
+
+	cred, actualMechs, _, err := k.Lib.AcquireCredWithPassword(userName, passBuf,
+		gssapi.GSS_C_INDEFINITE, k.GSS_C_NO_OID_SET, gssapi.GSS_C_INITIATE)
+	if err != nil {
+		return nil, err
+	}
+	defer actualMechs.Release()
+
+	return cred, nil
+}
