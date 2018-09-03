@@ -423,4 +423,9 @@ func (c *CredId) Store(filename string) error {
 	return c.stashLastStatus(maj, min)
 }
 
+// IsEmpty returns if the credential is empty.
+func (c *CredId) IsEmpty() bool {
+	return c == nil || c.C_gss_cred_id_t == nil
+}
+
 //TODO: Test for AddCred with existing cred
